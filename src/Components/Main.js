@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography, Button } from "@material-ui/core";
 import Filter from "./Filter";
+import { dummy } from "../Data/dummyData";
+import PropertyList from "./PropertyList";
+
 const useStyles = makeStyles({
 	root: {
 		width: "100%",
@@ -13,10 +16,10 @@ const useStyles = makeStyles({
 		fontWeight: "700",
 		color: "white",
 	},
-	subtext: {
+	localTxt: {
 		fontFamily: "Inter",
 		fontWeight: "500",
-		color: "white",
+		color: "#5658dd",
 		fontSize: "15px",
 	},
 	btn: {
@@ -40,7 +43,7 @@ const useStyles = makeStyles({
 
 const Main = () => {
 	const classes = useStyles();
-	const [dummyData, setData] = useState([]);
+	const [dummyData, setData] = useState(dummy || []);
 	const [propertyType, setPropertyType] = useState("Any");
 	const [Price, setPrice] = useState("Any");
 	const [Time, setTime] = useState("Any");
@@ -52,9 +55,65 @@ const Main = () => {
 		setPrice("Any");
 		setTime("Any");
 		setLocation("Any");
-		setData("dummy");
+		setData(dummy);
 	};
-	const filterHandler = () => {};
+	const filterHandler = () => {
+		setLoading(true);
+		if (
+			propertyType === "Any" &&
+			Price === "Any" &&
+			Time === "Any" &&
+			Location === "Any"
+		) {
+			setData(dummy);
+		} else {
+			let list1 = [];
+			let list2 = [];
+			let list3 = [];
+			let list4 = [];
+
+			if (propertyType !== "Any") {
+				list1 = dummy.filter((item) => item.type === propertyType);
+			}
+			if (Location !== "Any") {
+				list2 = dummy.filter((item) => item.location === Location);
+			}
+			if (Price !== "Any") {
+				list3 = dummy.filter((item) => item.price === Price);
+			}
+			if (Time !== "Any") {
+				list4 = dummy.filter((item) => item.when === Time);
+			}
+
+			if (propertyType === "Any") {
+				list1 = dummy;
+			}
+			if (Location === "Any") {
+				list2 = dummy;
+			}
+			if (Price === "Any") {
+				list3 = dummy;
+			}
+			if (Time === "Any") {
+				list4 = dummy;
+			}
+
+			let merge1 = list1.filter((e) => {
+				return list2.some((item) => item.id === e.id);
+			});
+
+			let merge2 = list3.filter((e) => {
+				return list4.some((item) => item.id === e.id);
+			});
+
+			let merge = merge1.filter((e) => {
+				return merge2.some((item) => item.id === e.id);
+			});
+
+			setData(merge);
+		}
+		setLoading(false);
+	};
 	return (
 		<div className={classes.root}>
 			<Filter
@@ -69,7 +128,7 @@ const Main = () => {
 				filterHandler={filterHandler}
 			/>
 			<div className={classes.flexBox}>
-				<Typography variant="h7" className={classes.subtext}>
+				<Typography variant="h7" className={classes.localTxt}>
 					{dummyData.length} Results Found
 				</Typography>
 				{Location !== "Any" ||
@@ -81,6 +140,7 @@ const Main = () => {
 					</Button>
 				) : null}
 			</div>
+			<PropertyList loading={loading} propertyData={dummyData} />
 		</div>
 	);
 };

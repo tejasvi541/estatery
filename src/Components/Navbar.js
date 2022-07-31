@@ -40,7 +40,7 @@ const useStyles = makeStyles({
 		fontFamily: "Inter",
 		fontWight: "600",
 		margin: "0.2rem 0.5rem 0.2rem 0.2rem",
-		color: "#6e66ef",
+		color: "#5658dd",
 	},
 	activeLinkWrapper: {
 		padding: "5px",
